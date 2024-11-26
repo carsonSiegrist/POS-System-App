@@ -1,48 +1,53 @@
-// Entry point for the application
+//Entry point of the application
 
-import RadialMenu from 'react-native-radial-menu';
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { TableProvider } from "./app/contexts/TableContext";
+import OrderingPage from "./app/screens/OrderingPage";
+import TableSelectionPage from "./app/screens/TableSelectionPage";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
+//Using a stack navigator due to the simple structure of the app.
+//The ordering page will serve as the bottom of the stack, and will never be popped.
+//Table page is added to the stack when accessed - and removed when closed.
+//This by default also supports intuitive gesters like swiping from the edge of the screen to clear it
+//If we end up needing a new navigation structure for more pages, it will be simple to add them to the stack navigation structure.
+//We'd just need to ensure proper handling of pages, i.e. disallow things like "menu page -> table -> setting -> table -> setting ... " occupying the stack.
+const Stack = createStackNavigator();
 
 export default function App() {
-  const [option, setOption] = useState("None");
+  //Tracks an order per table, allowing orders to persist across changing tables.
+  //Suitable for small scale, does not maintain when closing app.
+  //Defined here so that it can persist across all pages (passing it as a prop to each page.)
+  const [orders, setOrders] = useState([[], [], [], [], []]);
 
+  //Actual JSX that will be rendered
+  //First we wrap the app in the GestureHandlerRootView so that the whole app can respond to gestures. (i.e. swiping)
+  //Next we wrap the app in our table provider; This allows the whole app to access table information.
+  //Next we load the navigation structure, then the initial page.
+  //Loads the ordering page as it is the initial page in the navigator
   return (
-    <View style={styles.container}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Hello, World!</Text>
-      </View>
-      <View style={styles.container}>
-        <RadialMenu onOpen={() => console.log("Menu opened")} onClose={() => console.log("Menu closed")}>
-          <Text style={styles.menuItem}>Example Menu</Text>
-          <Text onSelect={() => setOption("Selected A")} style={styles.menuItem}>Option A</Text>
-          <Text onSelect={() => setOption("Selected B")} style={styles.menuItem}>Option B</Text>
-          <Text onSelect={() => setOption("Selected C")} style={styles.menuItem}>Option C</Text>
-        </RadialMenu>
-      </View>
-      <View style={styles.container}>
-      <Text>
-        {`You've selected option: ${option}`}
-      </Text>
-      </View>
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <TableProvider>
+        <NavigationContainer>
+          {/* Create the stack navigator: set the Ordering Page to be the initial page. */}
+          <Stack.Navigator initialRouteName="OrderingPage">
+            <Stack.Screen name="OrderingPage">
+              {(props) => (
+                <OrderingPage
+                  {...props}
+                  orders={orders}
+                  setOrders={setOrders}
+                />
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="TableSelectionPage">
+              {(props) => <TableSelectionPage {...props} orders={orders} />}
+            </Stack.Screen>
+          </Stack.Navigator>
+        </NavigationContainer>
+      </TableProvider>
+    </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  title : {
-    fontSize: 36,
-    fontWeight: 'bold',
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  menuItem: {
-    backgroundColor: 'black',
-    color: 'white'
-  }
-});
