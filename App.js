@@ -1,3 +1,5 @@
+// Entry point for the application
+
 import RadialMenu from 'react-native-radial-menu';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
