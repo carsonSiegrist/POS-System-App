@@ -22,7 +22,7 @@ Point of Sale System App
    - Follow the setup wizard for a **Standard Installation**.
 
 4. **Create an Android Emulator**
-   - Open **Android Studio** > **Device Manager** > **Create Device**.
+   - Open **Android Studio** > **More Actions** > **Device Manager** > **Create Device**.
    - Select a **Tablet** device, configure it, and click **Finish**.
 
 5. **Install Project Dependencies**  
@@ -36,11 +36,13 @@ Point of Sale System App
 1. **Start Expo Metro Bundler**  
    Navigate to your project folder and run:
    ```bash
-   npx expo start
+   npm start
    ```
-
-2. **Connect Emulator to Expo**
-   - Open the emulator.
+2. **Open your Android Emulator**
+   - Open **Android Studio** > **More Actions** > **Device Manager**.
+   - Select your tablet from the list, then press the launch arrow on the right side.
+   - Wait for the device to start.
+4. **Connect Emulator to Expo**
    - In the Expo CLI, press `a` to launch the app in Android Emulator.
 
 The app should now be running on the Android tablet emulator!
